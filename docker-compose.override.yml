@@ -1,0 +1,13 @@
+version: '3.9'
+
+services:
+  web:
+    image: stephdockerkube:dev
+    build:
+      target: dev
+    volumes:
+      - "./frontend:/usr/apps/frontend"
+    ports:
+      - "${FRONTEND_PORT:-3000}:3000"
+    expose:
+      - 3000

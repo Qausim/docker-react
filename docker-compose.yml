@@ -4,4 +4,7 @@ services:
   web:
     container_name: frontend-app
     build:
+      target: prod
       context: ./frontend
+    ports:
+      - "80:80"

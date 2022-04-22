@@ -1,0 +1,37 @@
+name: Deploy to Elastic Beanstalk
+
+on:
+  pull_request:
+    types: [closed]
+    branches:
+      - master
+
+jobs:
+  deploy:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Get SHORT_SHA
+        run: echo "SHORT_SHA=${GITHUB_SHA::8}" >> $GITHUB_ENV
+      - name: Create ZIP
+        run: zip -r deploy_package.zip ./
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-region: eu-west-2
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-access-key-secret: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      - name: Upload to S3
+        run: aws s3 cp deploy_package.zip s3://elasticbeanstalk-eu-west-2-905084406720/docker-react/
+      - name: Create application version on Beanstalk
+        run: |
+            aws elasticbeanstalk create-application-version \
+            --application-name docker-react \
+            --source-bundle S3Bucket="${{ secrets.S3_BUCKET }}",S3Key="deploy_package.zip" \
+            --version-label "ver-${{ env.SHORT_SHA }}" \
+            --description "commit-sha-$GITHUB_SHA"
+      - name: Deploy app to Beanstalk
+        run: |
+            aws elasticbeanstalk update-environment --environment-name Dockerreact-env --version-label ver-${{ env.SHORT_SHA }}

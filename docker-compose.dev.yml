@@ -2,9 +2,10 @@ version: '3.9'
 
 services:
   web:
-    image: stephdockerkube:dev
+    container_name: frontend-app
     build:
       target: dev
+      context: ./frontend
     volumes:
       - "./frontend:/usr/apps/frontend"
     ports:

@@ -29,7 +29,7 @@ jobs:
         run: |
             aws elasticbeanstalk create-application-version \
             --application-name docker-react \
-            --source-bundle S3Bucket="s3://elasticbeanstalk-eu-west-2-905084406720/docker-react/",S3Key="deploy_package.zip" \
+            --source-bundle S3Bucket="s3://elasticbeanstalk-eu-west-2-905084406720/",S3Key="docker-react/deploy_package.zip" \
             --version-label "ver-${{ env.SHORT_SHA }}" \
             --description "commit-sha-$GITHUB_SHA"
       - name: Deploy app to Beanstalk
